@@ -4,36 +4,24 @@ import Modal from "./Modal";
 import classes from "./PostsList.module.css";
 import { useState } from "react";
 
-function PostsList() {
-  const [enteredBody, setEnteredBody] = useState("");
-  const [enteredAuthor, setEnteredAuthor] = useState("");
-  const [showModal, setShowModal] = useState(true);
+function PostsList({ isPosting, onStopPosting }) {
+  const [posts, setPosts] = useState([]);
 
-  function bodyChangeHandler(event) {
-    setEnteredBody(event.target.value);
-  }
-
-  function authorChangeHanlder(event) {
-    setEnteredAuthor(event.target.value);
-  }
-
-  function modalChangeHandler() {
-    setShowModal(false);
+  function addPostHandeler(postData) {
+    setPosts((existingPosts) => [postData, ...existingPosts]);
   }
 
   return (
     <>
-      {showModal ? (
-        <Modal onClose={modalChangeHandler}>
-          <NewPost
-            onBodyChange={bodyChangeHandler}
-            onAuthorChange={authorChangeHanlder}
-          />
+      {isPosting ? (
+        <Modal onClose={onStopPosting}>
+          <NewPost onCancel={onStopPosting} onAddPost={addPostHandeler} />
         </Modal>
       ) : null}
       <ul className={classes.posts}>
-        <Post author={enteredAuthor} body={enteredBody} />
-        <Post author="Mcgreogr" body="Know yourselves!" />
+        {posts.map((post) => (
+          <Post body={post.body} author={post.author} />
+        ))}
       </ul>
     </>
   );
